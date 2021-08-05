@@ -1,18 +1,18 @@
 import {
-    FETCH_FIELDS_REQUEST, 
-    FETCH_FIELDS_SUCCESS, 
-    FETCH_FIELDS_FAILURE
-} from '../actions/fields/fieldTypes';
+    FETCH_QUERYS_REQUEST, 
+    FETCH_QUERYS_SUCCESS, 
+    FETCH_QUERYS_FAILURE
+} from '../actions/querys/queryTypes';
 
 const initialState = {
     loading: true,
-    fieldRows: [],
+    queryList: [],
     error: ''
 }
 
-const FieldReducer = (state = initialState, action) => {
+const QueryReducer = (state = initialState, action) => {
     switch (action.type) {
-        case FETCH_FIELDS_REQUEST:
+        case FETCH_QUERYS_REQUEST:
             
             return {
                 ...state,
@@ -20,17 +20,17 @@ const FieldReducer = (state = initialState, action) => {
             
         }
 
-        case FETCH_FIELDS_SUCCESS:
+        case FETCH_QUERYS_SUCCESS:
             return {
                 loading: false,
-                fieldRows: action.payload,
+                queryList: action.payload,
                 error: ''
             }
 
-        case FETCH_FIELDS_FAILURE:
+        case FETCH_QUERYS_FAILURE:
             return {
                 loading: false,
-                fieldRows: [],
+                queryList: [],
                 error: action.payload
             }
 
@@ -39,4 +39,4 @@ const FieldReducer = (state = initialState, action) => {
     }
 }
 
-export default FieldReducer;
+export default QueryReducer;

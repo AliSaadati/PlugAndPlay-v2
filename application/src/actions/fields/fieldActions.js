@@ -26,9 +26,10 @@ const fetchFieldsFailure = error => {
 };
 
 export const fetchFields = () => {
-    return (dispatch) => {
+    return async (dispatch) => {
         dispatch(fetchFieldsRequest());
-        axios.get('/columns')
+
+        axios.get('/fields')
             .then(res => {
                 dispatch(fetchFieldsSuccess(res.data))
             })

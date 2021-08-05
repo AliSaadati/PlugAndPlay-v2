@@ -4,22 +4,22 @@ import {
     FETCH_VIEWS_SUCCESS, 
     FETCH_VIEWS_FAILURE,
     SET_CURRENT_VIEW
-} from './fieldTypes';
+} from './viewTypes';
 
-const fetchViewsRequest = () => {
+export const fetchViewsRequest = () => {
     return {
         type: FETCH_VIEWS_REQUEST
     };
 };
 
-const fetchViewsSuccess = fields => {
+export const fetchViewsSuccess = fields => {
     return {
         type: FETCH_VIEWS_SUCCESS,
         payload: fields
     };
 };
 
-const fetchViewsFailure = error => {
+export const fetchViewsFailure = error => {
     return {
         type: FETCH_VIEWS_FAILURE,
         payload: error
@@ -28,11 +28,13 @@ const fetchViewsFailure = error => {
 
 
 export const fetchViews = () => {
-    return (dispatch) => {
+    return async (dispatch) => {
         dispatch(fetchViewsRequest());
+
         axios.get('/views')
             .then(res => {
                 dispatch(fetchViewsSuccess(res.data))
+                return res.data;
             })
             .catch(err => {
                 dispatch(fetchViewsFailure(err.message))
@@ -40,9 +42,9 @@ export const fetchViews = () => {
     }
 }
 
-export const setCurrentView = view => {
+export const setCurrentView = nextView => {
     return {
         type: SET_CURRENT_VIEW,
-        payload: view
+        payload: nextView
     }
 }

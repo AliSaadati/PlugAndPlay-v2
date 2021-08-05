@@ -1,13 +1,14 @@
 import {
     FETCH_VIEWS_REQUEST, 
     FETCH_VIEWS_SUCCESS, 
-    FETCH_VIEWS_FAILURE
+    FETCH_VIEWS_FAILURE,
+    SET_CURRENT_VIEW
 } from '../actions/views/viewTypes';
 
 const initialState = {
-    loading: false,
-    views: [],
-    currentView: {},
+    loading: true,
+    viewList: [],
+    currentView: {id: 1, name: "default", type: "default"},
     error: ''
 }
 
@@ -23,23 +24,27 @@ const ViewReducer = (state = initialState, action) => {
 
         case FETCH_VIEWS_SUCCESS:
             return {
+                ...state,
                 loading: false,
-                views: action.payload,
+                viewList: action.payload,
                 error: ''
             }
 
         case FETCH_VIEWS_FAILURE:
             return {
+                ...state,
                 loading: false,
-                views: [],
+                viewList: [],
                 error: action.payload
             }
 
         case SET_CURRENT_VIEW:
+            console.log(action.payload)
             return {
                 ...state,
                 currentView: action.payload
             }
+
         default:
             return state;
         

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import ControlPointIcon from '@material-ui/icons/ControlPoint';
 import CancelIcon from '@material-ui/icons/Cancel';
 
@@ -11,11 +11,12 @@ import {
     Switch,
     Select,
     MenuItem,
-    Input,
-    Divider
+    Input
 } from "@material-ui/core";
-import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 import { makeStyles } from "@material-ui/core/styles"
+import { fetchQuerys } from '../../actions/querys/queryActions'
+import {useDispatch, useSelector } from 'react-redux';
 
 const useStyles = makeStyles((theme) => ({
     cssLabel: {
@@ -24,8 +25,15 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 export default function QueryMenuItem() {
+    const dispatch = useDispatch();
+    const querys = useSelector(state => state.querys);
+
     const classes = useStyles();
 
+    useEffect (() => {
+        dispatch(fetchQuerys())
+    }, [querys])
+    
     return (
         <>
             <Autocomplete
@@ -48,10 +56,10 @@ export default function QueryMenuItem() {
                             endAdornment:
                                 <InputAdornment position='end'>
                                     <IconButton
+                                        onClick={(event) => event.stopPropagation()}
                                         edge="end"
                                         aria-label="comments">
                                         <ControlPointIcon
-                                            onClick={(event) => event.stopPropagation()}
                                             htmlColor="#44acff"
                                             fontSize='medium' />
                                     </IconButton>
@@ -63,12 +71,14 @@ export default function QueryMenuItem() {
                     />
                 )}
             />
-            <List style={{ width: '100%', padding: 0 }}>
+            {querys.map(query => {
+                <List key={query.id} style={{ width: '100%', padding: 0 }}>
                 <ListItem style={{ display: 'flex', padding: 0, marginBottom: '1.5rem' }}>
                     <Switch
                         name="checkedA"
                         inputProps={{ 'aria-label': 'secondary checkbox' }}
                         color="primary"
+                        checked={query.enabled}
                     />
                     <div style={{ display: 'flex', flexWrap: 'wrap', width: '100%' }}>
                         <div style={{ width: '100%', display: 'flex' }}>
@@ -77,12 +87,13 @@ export default function QueryMenuItem() {
                                 fullWidth
                                 variant="standard"
                                 placeholder="Select Field to Query on"
+                                defaultValue={query.name}
                             />
                             <Select
                                 value='10'
                                 style={{ width: '10rem' }}
                                 displayEmpty
-                                input={<Input name="circle" id="circle"
+                                input={<Input name="circle" id="circle1"
                                     variant='outlined' />}
                             >
                                 <MenuItem value={10}>Ten</MenuItem>
@@ -91,7 +102,7 @@ export default function QueryMenuItem() {
                             </Select>
                         </div>
                         <TextField
-                            style={{}}
+                            defaultValue={query.parameter}
                             fullWidth
                             variant="standard"
                             placeholder="Select Field to Query on"
@@ -100,10 +111,11 @@ export default function QueryMenuItem() {
                     <IconButton color="secondary">
                         <CancelIcon
                             name="checkedA"
-                            inputProps={{ 'aria-label': 'secondary checkbox' }}
                         />
                     </IconButton>
                 </ListItem>
+            })}
+            
                 <ListItem style={{ backgroundColor: '#f9f9f9', display: 'flex', padding: 0, marginBottom: '1.5rem' }}>
                     <Switch
                         color="primary"
@@ -124,7 +136,7 @@ export default function QueryMenuItem() {
                                 value='10'
                                 style={{ width: '10rem' }}
                                 displayEmpty
-                                input={<Input name="circle" id="circle"
+                                input={<Input name="circle" id="circle2"
                                     variant='outlined' />}
                             >
                                 <MenuItem value={10}>Ten</MenuItem>
@@ -143,7 +155,6 @@ export default function QueryMenuItem() {
                     <IconButton color="secondary">
                         <CancelIcon
                             name="checkedA"
-                            inputProps={{ 'aria-label': 'secondary checkbox' }}
                         />
                     </IconButton>
 
@@ -166,7 +177,7 @@ export default function QueryMenuItem() {
                                 value='10'
                                 style={{ width: '10rem' }}
                                 displayEmpty
-                                input={<Input name="circle" id="circle"
+                                input={<Input name="circle" id="circle3"
                                     variant='outlined' />}
                             >
                                 <MenuItem value={10}>Ten</MenuItem>
@@ -184,7 +195,6 @@ export default function QueryMenuItem() {
                     <IconButton color="secondary">
                         <CancelIcon
                             name="checkedA"
-                            inputProps={{ 'aria-label': 'secondary checkbox' }}
                         />
                     </IconButton>
                 </ListItem>
@@ -206,7 +216,7 @@ export default function QueryMenuItem() {
                                 value='10'
                                 style={{ width: '10rem' }}
                                 displayEmpty
-                                input={<Input name="circle" id="circle"
+                                input={<Input name="circle" id="circle4"
                                     variant='outlined' />}
                             >
                                 <MenuItem value={10}>Ten</MenuItem>
@@ -224,7 +234,6 @@ export default function QueryMenuItem() {
                     <IconButton color="secondary">
                         <CancelIcon
                             name="checkedA"
-                            inputProps={{ 'aria-label': 'secondary checkbox' }}
                         />
                     </IconButton>
 

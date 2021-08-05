@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
     Accordion,
     AccordionSummary,
@@ -28,7 +28,6 @@ const useStyles = makeStyles((theme) => ({
         margin: '2rem'
     },
     heading: {
-        fontSize: theme.typography.pxToRem(15),
         fontWeight: 800,
         fontSize: '1rem',
         color: '#666'

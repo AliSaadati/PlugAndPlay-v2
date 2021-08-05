@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { fetchFields } from '../../actions/fields/fieldActions';
 
 import { makeStyles } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
@@ -11,14 +10,10 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Checkbox from '@material-ui/core/Checkbox';
 import IconButton from '@material-ui/core/IconButton';
 import ControlPointIcon from '@material-ui/icons/ControlPoint';
-import {
-    TextField,
-    InputAdornment
-} from "@material-ui/core";
+import { TextField, InputAdornment } from "@material-ui/core";
 
-import {
-    Search as SearchIcon
-} from "@material-ui/icons"
+import { Search as SearchIcon } from "@material-ui/icons"
+import { fetchColumns, setColumns } from '../../actions/columns/columnActions';
 
 const useStyles = makeStyles((theme) => ({
     textField: {
@@ -39,11 +34,9 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: '#f9f9f9',
         maxHeight: '3rem',
 
-            '&:hover, &:focus': {
+        '&:hover, &:focus': {
             backgroundColor: '#ebebeb',
-
         },
-
     },
     listItemText: {
         fontWeight: 'bold'
@@ -53,25 +46,48 @@ const useStyles = makeStyles((theme) => ({
 export default function QueryMenuItem() {
 
     const classes = useStyles();
-
     const dispatch = useDispatch();
-    const fields = useSelector(state => state.fields);
 
-    const [str, setStr] = useState("");
+    const fields = useSelector(state => state.fields)
+    const columns = useSelector(state => state.columns);
+    const viewId = useSelector(state => state.views.currentView.id)
+
     const [checked, setChecked] = useState([]);
+    const [fieldFilter, setFieldFilter] = useState('')
 
     useEffect(() => {
-        dispatch(fetchFields())
-    }, [])
+        dispatch(fetchColumns(viewId))
+    }, [viewId])
 
-    const columnList = fields.fieldRows;
+    useEffect(() => {
+        const columnSorted = columns.columnList.slice().sort();
+        if (checked.length !== columns.columnList.length ||
+            !checked.slice().sort().every((value, index) => {
+                return value === columnSorted[index]
+            }))
+
+            setChecked(columns.columnList)
+    }, [columns])
+
+    useEffect(() => {
+        const columnSorted = columns.columnList.slice().sort();
+        if (checked.length !== columns.columnList.length ||
+            !checked.slice().sort().every((value, index) => {
+                return value === columnSorted[index]
+            })) {
+
+            dispatch(setColumns(checked))
+        }
+    }, [checked])
+
+    const fieldList = fields.fieldRows;
 
     const handleChange = event => {
-        setStr(event.target.value);
+        setFieldFilter(event.target.value);
     };
 
     const handleToggle = (value) => () => {
-        const currentIndex = checked.indexOf(value);
+        const currentIndex = checked.findIndex(i => i.name === value.name)
         const newChecked = [...checked];
 
         if (currentIndex === -1) {
@@ -85,9 +101,8 @@ export default function QueryMenuItem() {
 
     const handleToggleAll = () => {
         const newChecked = [];
-
-        if (checked.length !== columnList.length) {
-            for (let s of columnList) {
+        if (checked.length !== fieldList.length) {
+            for (let s of fieldList) {
                 newChecked.push(s)
             }
         }
@@ -111,7 +126,7 @@ export default function QueryMenuItem() {
                         </ InputAdornment>
                 }}
                 InputLabelProps={{ shrink: false }}
-                value={str}
+                value={fieldFilter}
                 onChange={handleChange}
                 className={classes.textField}
             />
@@ -125,7 +140,7 @@ export default function QueryMenuItem() {
                 <ListItemIcon>
                     <Checkbox
                         edge="start"
-                        checked={checked.length == columnList.length}
+                        checked={checked.length === fieldList.length}
                         tabIndex={-1}
                         disableRipple
                         inputProps={{ 'aria-labelledby': 'All Fields' }}
@@ -139,40 +154,42 @@ export default function QueryMenuItem() {
             </ListItem>
             <List className={classes.list}>
 
-                {columnList.map((value) => {
-                    console.log(value)
-                    const labelId = `checkbox-list-label-${value}`;
+                {fieldList.map((value) => {
+                    if (value.name.toLowerCase().includes(fieldFilter.toLowerCase())) {
+                        const labelId = `checkbox-list-label-${value}`;
 
-                    return (
-                        <ListItem
-                            key={value}
-                            role={undefined}
-                            dense
-                            button
-                            onClick={handleToggle(value)}
-                            className={classes.listItem}>
-                            <ListItemIcon>
-                                <Checkbox
-                                    edge="start"
-                                    checked={checked.indexOf(value) !== -1}
-                                    tabIndex={-1}
-                                    disableRipple
-                                    inputProps={{ 'aria-labelledby': labelId }}
-                                    color="primary"
-                                />
-                            </ListItemIcon>
-                            <ListItemText id={labelId} primary={value.name} />
-                            <ListItemSecondaryAction >
-                                <IconButton
-                                    edge="end"
-                                    aria-label="comments">
-                                    <ControlPointIcon
+                        return (
+                            <ListItem
+                                key={value.name}
+                                role={undefined}
+                                dense
+                                button
+                                onClick={handleToggle(value)}
+                                className={classes.listItem}>
+                                <ListItemIcon>
+                                    <Checkbox
+                                        edge="start"
+                                        checked={checked.findIndex(i => i.name === value.name) !== -1}
+                                        tabIndex={-1}
+                                        disableRipple
+                                        inputProps={{ 'aria-labelledby': labelId }}
+                                        color="primary"
+                                    />
+                                </ListItemIcon>
+                                <ListItemText id={labelId} primary={value.name} />
+                                <ListItemSecondaryAction >
+                                    <IconButton
+                                        edge="end"
+                                        aria-label="comments"
                                         onClick={(event) => event.stopPropagation()}
-                                        htmlColor="#44acff" />
-                                </IconButton>
-                            </ListItemSecondaryAction>
-                        </ListItem>
-                    );
+                                    >
+                                        <ControlPointIcon
+                                            htmlColor="#44acff" />
+                                    </IconButton>
+                                </ListItemSecondaryAction>
+                            </ListItem>
+                        );
+                    }
                 })}
             </List>
         </>
