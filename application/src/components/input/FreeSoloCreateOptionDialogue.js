@@ -31,6 +31,8 @@ export default function FreeSoloCreateOptionDialog() {
 
   // Local State
   const [value, setValue] = useState({ name: views.currentView.name, type: views.currentView.type });
+  const [saveDisabled, setSaveDisabled] = useState(false);
+  const [saveViewInputMessage, setSaveViewInputMessage] = useState('Choose a unique view name.');
   const [open, toggleOpen] = useState(false);
   const [dialogValue, setDialogValue] = useState({ name: '', type: '' });
 
@@ -53,32 +55,33 @@ export default function FreeSoloCreateOptionDialog() {
       name: dialogValue.name,
       type: dialogValue.type
     });
-    saveView(dialogValue)
+    saveNewView({...dialogValue, id:-1})
       .then((res) => {
         dispatch(fetchViews());
         return res;
       })
       .then((res) => {
-        console.log(res)
-        dispatch(setCurrentView({ ...dialogValue, id: res.body.id }));
-        console.log('setting current view')
+        console.log(res.status)
+        dispatch(setCurrentView(res.body));
+      })
+      .catch((error) => {
+        console.log(error)
       });
 
     handleClose();
   };
 
-  async function saveView(currView) {
+  async function saveNewView(currView) {
 
-    let response = await fetch("/save", {
+    let response = await fetch("/save-new", {
       method: 'POST',
       cache: 'no-cache',
       headers: { 'Content-Type': 'application/json' },
       referrerPolicy: 'no-referrer',
-      body: JSON.stringify({ view: currView, columns: columns.columnList, queries: querys.queryList })
+      body: JSON.stringify({ view: currView})
     });
 
     let json = await response.json();
-
     return { status: response.status, body: json }
   }
 
@@ -88,10 +91,9 @@ export default function FreeSoloCreateOptionDialog() {
         size='small'
         value={value}
         onChange={(event, newValue) => {
-          console.log('here')
           // value other than one from the dropdown is pressed "Enter" on
           if (typeof newValue === 'string') {
-            
+
             // Timeout needed to prevent dialog box from instantly validating
             setTimeout(() => {
               toggleOpen(true);
@@ -161,17 +163,31 @@ export default function FreeSoloCreateOptionDialog() {
       />
       <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
         <form onSubmit={handleSubmit}>
-          <DialogTitle id="form-dialog-title">Add a new film</DialogTitle>
+          <DialogTitle id="form-dialog-title">Add a new View</DialogTitle>
           <DialogContent>
             <DialogContentText>
-              Did you miss any film in our list? Please, add it!
+              Please choose a View Name and View Category
             </DialogContentText>
             <TextField
+              error={saveDisabled}
               autoFocus
               margin="dense"
               id="name"
               value={dialogValue.name}
-              onChange={(event) => setDialogValue({ ...dialogValue, name: event.target.value })}
+              helperText={saveViewInputMessage}
+              onChange={(event) => {
+                setDialogValue({ ...dialogValue, name: event.target.value });
+                if (views.viewList.map(view => view.name).indexOf(event.target.value) > -1) {
+                  setSaveDisabled(true);
+                  setSaveViewInputMessage('View name in use, choose another name.')
+                } else if (event.target.value === '') {
+                  console.log(event.target.value);
+                  setSaveDisabled(true);
+                } else {
+                  setSaveDisabled(false);
+                  setSaveViewInputMessage('Choose a unique view name.')
+                }
+              }}
               label="title"
               type="text"
             />
@@ -185,10 +201,10 @@ export default function FreeSoloCreateOptionDialog() {
             />
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleClose} color="primary">
+            <Button onClick={handleClose} color="secondary">
               Cancel
             </Button>
-            <Button type="submit" color="primary">
+            <Button disabled={saveDisabled} type="submit" color="primary">
               Add
             </Button>
           </DialogActions>

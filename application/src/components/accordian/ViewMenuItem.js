@@ -1,10 +1,12 @@
 import React, { useEffect } from 'react';
 import { Button } from "@material-ui/core";
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 
 import { makeStyles } from "@material-ui/core/styles"
 
+import { fetchQuerys } from '../../actions/querys/queryActions';
 import FreeSoloCreateOptionDialog from '../input/FreeSoloCreateOptionDialogue'
+import { saveView } from '../../actions/views/viewActions';
 
 const useStyles = makeStyles((theme) => ({
     buttonContainer: {
@@ -21,24 +23,28 @@ export default function ViewMenuItem() {
     const columns = useSelector(state => state.columns);
     const currView = useSelector(state => state.views.currentView);
     const querys = useSelector(state => state.querys);
+
+    const disptach = useDispatch();
     
     useEffect(() => {
         
     }, [])
  
-    const saveView = async () => {
+    const saveViewHandler = async () => {
 
-        let response = await fetch("/save", {
-          method: 'POST',
-          cache: 'no-cache',
-          headers: { 'Content-Type': 'application/json' },
-          referrerPolicy: 'no-referrer',
-          body: JSON.stringify({ view: currView, columns: columns.columnList, queries: querys.queryList })
-        });
+        // let response = await fetch("/save", {
+        //   method: 'POST',
+        //   cache: 'no-cache',
+        //   headers: { 'Content-Type': 'application/json' },
+        //   referrerPolicy: 'no-referrer',
+        //   body: JSON.stringify({ view: currView, columns: columns.columnList, querys: querys.queryList })
+        // });
     
-        let json = await response.json();
-    
-        return { status: response.status, body: json }
+        // let json = await response.json();
+        
+        // return { status: response.status, body: json }
+
+        disptach(saveView())
       }
 
     return (
@@ -51,17 +57,19 @@ export default function ViewMenuItem() {
                         style={{ marginRight: '.5rem' }}
                         variant='contained'
                         color="primary"
-                        onClick={saveView}>Save</Button>
+                        onClick={saveViewHandler}
+                        disableElevation>Save</Button>
                     <Button
                         size="small"
-                        variant='contained'
-                        color="secondary">Save As</Button>
+                        // variant='outlined'
+                        color="primary">Save As</Button>
                 </div>
                 <div>
                     <Button
                         size="small"
                         variant='contained'
-                        color="secondary">Delete</Button>
+                        color="secondary"
+                        disableElevation>Delete</Button>
                 </div>
             </div>
         </>

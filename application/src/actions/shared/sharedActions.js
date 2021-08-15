@@ -3,7 +3,10 @@ import { fetchViews } from '../views/viewActions';
 
 export const initializeState = () => {
     return (dispatch) => {
-        dispatch(fetchViews()); 
-        dispatch(fetchFields());
+        dispatch(fetchFields())
+        .then(res => {
+            console.log(res);
+            dispatch(fetchViews());
+        })
     }
 }

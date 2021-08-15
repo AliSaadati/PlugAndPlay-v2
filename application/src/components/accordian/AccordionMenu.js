@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
         flexWrap: 'wrap'
     },
     accordionContainer: {
-        margin: '2rem'
+        padding: '2rem'
     },
     heading: {
         fontWeight: 800,
@@ -41,7 +41,7 @@ export default function AccordionMenu() {
     const classes = useStyles();
 
     return (
-        <div className={classes.accordionContainer}>
+        <>
             <Accordion
                 className={classes.accordion}>
                 <AccordionSummary
@@ -78,6 +78,6 @@ export default function AccordionMenu() {
 
                 </AccordionDetails>
             </Accordion>
-        </div>
+        </>
     )
 }

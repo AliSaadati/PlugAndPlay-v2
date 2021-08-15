@@ -1,39 +1,48 @@
 import axios from 'axios';
 import {
-    FETCH_FIELDS_REQUEST, 
-    FETCH_FIELDS_SUCCESS, 
-    FETCH_FIELDS_FAILURE
-} from './fieldTypes';
+    FETCH_ROWS_REQUEST,
+    FETCH_ROWS_SUCCESS,
+    FETCH_ROWS_FAILURE
+} from './rowTypes';
 
-const fetchFieldsRequest = () => {
+const fetchRowsRequest = () => {
     return {
-        type: FETCH_FIELDS_REQUEST
+        type: FETCH_ROWS_REQUEST
     };
 };
 
-const fetchFieldsSuccess = fields => {
+const fetchRowsSuccess = rows => {
     return {
-        type: FETCH_FIELDS_SUCCESS,
-        payload: fields
+        type: FETCH_ROWS_SUCCESS,
+        payload: rows
     };
 };
 
-const fetchFieldsFailure = error => {
+const fetchRowsFailure = error => {
     return {
-        type: FETCH_FIELDS_FAILURE,
+        type: FETCH_ROWS_FAILURE,
         payload: error
     };
 };
 
-export const fetchFields = () => {
-    return (dispatch) => {
-        dispatch(fetchFieldsRequest());
-        axios.get('/columns')
-            .then(res => {
-                dispatch(fetchFieldsSuccess(res.data))
+export const fetchRows = () => {
+    return async (dispatch, getState) => {
+        dispatch(fetchRowsRequest());
+        
+        try {
+            let res = await fetch('/rows', {
+                method: 'POST',
+                cache: 'no-cache',
+                headers: { 'Content-Type': 'application/json' },
+                referrerPolicy: 'no-referrer',
+                body: JSON.stringify({ querys: getState().querys.queryList })
             })
-            .catch(err => {
-                dispatch(fetchFieldsFailure(err.message))
-            })
+            res = await res.json()
+            dispatch(fetchRowsSuccess(res))
+        } catch (err) {
+            dispatch(fetchRowsFailure(err.message))
+
+        }
     }
 }
+

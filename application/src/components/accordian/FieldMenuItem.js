@@ -14,6 +14,7 @@ import { TextField, InputAdornment } from "@material-ui/core";
 
 import { Search as SearchIcon } from "@material-ui/icons"
 import { fetchColumns, setColumns } from '../../actions/columns/columnActions';
+import { addQuery } from '../../actions/querys/queryActions';
 
 const useStyles = makeStyles((theme) => ({
     textField: {
@@ -109,6 +110,15 @@ export default function QueryMenuItem() {
         setChecked(newChecked);
     }
 
+    const addQueryClickHandler = (event, value) => {
+        event.stopPropagation();
+        dispatch(addQuery({ 
+            field_name: value.name, 
+            field_id: value.id, 
+            type: value.type 
+        }))
+}
+
     return (
         <>
             <TextField
@@ -181,7 +191,7 @@ export default function QueryMenuItem() {
                                     <IconButton
                                         edge="end"
                                         aria-label="comments"
-                                        onClick={(event) => event.stopPropagation()}
+                                        onClick={(event) => addQueryClickHandler(event, value)}
                                     >
                                         <ControlPointIcon
                                             htmlColor="#44acff" />

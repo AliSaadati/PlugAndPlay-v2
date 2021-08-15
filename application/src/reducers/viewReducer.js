@@ -39,7 +39,6 @@ const ViewReducer = (state = initialState, action) => {
             }
 
         case SET_CURRENT_VIEW:
-            console.log(action.payload)
             return {
                 ...state,
                 currentView: action.payload
