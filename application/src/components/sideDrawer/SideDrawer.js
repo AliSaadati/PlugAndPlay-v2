@@ -16,8 +16,11 @@ import CreateIcon from '@material-ui/icons/Create';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import GetAppIcon from '@material-ui/icons/GetApp';
 
-import {useSelector, useDispatch} from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { fetchRows } from '../../actions/rows/rowActions';
+import xlsx from 'xlsx';
+import useExportExcel from '../../hooks/useExportExcel'
+
 const drawerWidth = 240;
 
 
@@ -55,11 +58,12 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-export default function SideDrawer({open, setOpen}) {
+export default function SideDrawer({ open, setOpen }) {
     const dispatch = useDispatch();
     const classes = useStyles();
     const theme = useTheme();
 
+    const allRows = useSelector(state => state.rows.rows)
     const handleDrawerClose = () => {
         setOpen(false);
     };
@@ -67,6 +71,41 @@ export default function SideDrawer({open, setOpen}) {
     const runQueryHandler = () => {
         dispatch(fetchRows())
     }
+
+    // const exportDataHandler = () => {
+    //     if (allRows.length > 0) {
+    //         console.log(allRows)
+    //         let keys = Object.keys(allRows[0])
+    //         let urlColumns = []
+
+    //         for (let i = 0; i < keys.length; i++) {
+    //             if (keys[i].includes('URL')) {
+    //                 urlColumns.push(i)
+    //             }
+    //         }
+
+    //         for (let i = 0; i < allRows.length; i++) {
+    //             urlColumns.forEach((colIndex) => {
+    //                 console.log(colIndex)
+    //                 if (allRows[i][keys[colIndex]] !== null && allRows[i][keys[colIndex]].trim() !== '')
+    //                     allRows[i][keys[colIndex]] = {
+    //                         f: 'HYPERLINK("' + allRows[i][keys[colIndex]] + '","' + allRows[i][keys[colIndex]] + '")',
+    //                         t: 's',
+    //                         v: allRows[i][keys[colIndex]]
+    //                     }
+    //             })
+    //         }
+    //         var newWB = xlsx.utils.book_new();
+    //         var newWS = xlsx.utils.json_to_sheet(allRows);
+    //         xlsx.utils.book_append_sheet(newWB, newWS, "New Data");
+
+    //         xlsx.writeFile(newWB, "Test.xlsx");
+    //     }
+    // }
+
+    const exportDataHandler = useExportExcel(allRows);
+
+
     return (
         <>
             <Drawer
@@ -90,10 +129,10 @@ export default function SideDrawer({open, setOpen}) {
                 <Divider />
                 <List>
                     <ListItem onClick={runQueryHandler} button>
-                        <ListItemIcon><PlayArrowIcon/></ListItemIcon>
+                        <ListItemIcon><PlayArrowIcon /></ListItemIcon>
                         <ListItemText primary="Run Query" />
                     </ListItem>
-                    <ListItem button>
+                    <ListItem onClick={exportDataHandler.exportData} button>
                         <ListItemIcon><GetAppIcon /></ListItemIcon>
                         <ListItemText primary="Download Table" />
                     </ListItem>

@@ -87,11 +87,69 @@ export const saveView = () => {
         try {
             const res = await axios.post('/save', body)
             if (state.querys.queryList.some(value => value.id < 0)) {
-                dispatch(fetchQuerys(state.currentView.id));
+                dispatch(fetchQuerys(state.views.currentView.id));
             }
 
         } catch (error) {
             console.log(error)
         }
+    }
+}
+
+export const saveNewView = (newView) => {
+    return async (dispatch) => {
+
+        const body = {
+            view: { ...newView }
+        }
+
+        try {
+            // save new view
+            let res = await axios.post('/save-new', body);
+
+            // refresh views
+            await dispatch(fetchViews());
+
+            // set current view to newly saved view
+            dispatch(setCurrentView(res.body))
+
+        } catch (error) {
+            console.log(error)
+        }
+    }
+}
+
+export const saveViewAs = (newView) => {
+    return async (dispatch, setState) => {
+
+        const state = setState();
+
+        const body = {
+            view: { ...newView },
+            columns: state.columns.columnList,
+            querys: state.querys.queryList
+        }
+
+        try {
+            // save new view
+            let res = await axios.post('/save-as', body);
+
+            // refresh views
+            await dispatch(fetchViews());
+
+            // set current view to newly saved view
+            dispatch(setCurrentView(res.body))
+
+            // fetch queries if newly created query was saved
+            if (state.querys.queryList.some(value => value.id < 0)) {
+                dispatch(fetchQuerys(res.body.id));
+            }
+
+        } catch (error) {
+            console.log(error)
+        }
+
+        // let json = await response.json();
+        // return { status: response.status, body: json }
     }
 }

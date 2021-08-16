@@ -10,7 +10,7 @@ import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete
 import { makeStyles } from "@material-ui/core/styles"
 
 import { useSelector, useDispatch } from 'react-redux';
-import { setCurrentView, fetchViews } from '../../actions/views/viewActions';
+import { setCurrentView, fetchViews, saveNewView } from '../../actions/views/viewActions';
 
 const filter = createFilterOptions();
 
@@ -55,35 +55,22 @@ export default function FreeSoloCreateOptionDialog() {
       name: dialogValue.name,
       type: dialogValue.type
     });
-    saveNewView({...dialogValue, id:-1})
-      .then((res) => {
-        dispatch(fetchViews());
-        return res;
-      })
-      .then((res) => {
-        console.log(res.status)
-        dispatch(setCurrentView(res.body));
-      })
-      .catch((error) => {
-        console.log(error)
-      });
 
-    handleClose();
+    dispatch(saveNewView({...dialogValue, id:-1}))
+    //   .then((res) => {
+    //     dispatch(fetchViews());
+    //     return res;
+    //   })
+    //   .then((res) => {
+    //     console.log(res.status)
+    //     dispatch(setCurrentView(res.body));
+    //   })
+    //   .catch((error) => {
+    //     console.log(error)
+    //   });
+
+    // handleClose();
   };
-
-  async function saveNewView(currView) {
-
-    let response = await fetch("/save-new", {
-      method: 'POST',
-      cache: 'no-cache',
-      headers: { 'Content-Type': 'application/json' },
-      referrerPolicy: 'no-referrer',
-      body: JSON.stringify({ view: currView})
-    });
-
-    let json = await response.json();
-    return { status: response.status, body: json }
-  }
 
   return (
     <>
