@@ -1,5 +1,5 @@
 #
 **/node_modules
 server.js
-git TODO.txt
-**/build
+TODO.txt
+!**/build
