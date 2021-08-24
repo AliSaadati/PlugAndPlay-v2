@@ -21,7 +21,6 @@ import { fetchRows } from '../../actions/rows/rowActions';
 import { openDialog } from '../../actions/dialog/dialogActions';
 import { saveView } from '../../actions/views/viewActions';
 
-import xlsx from 'xlsx';
 import useExportExcel from '../../hooks/useExportExcel'
 
 const drawerWidth = 240;

@@ -94,7 +94,7 @@ const QueryListItem = ({
                         fullWidth
                         variant="standard"
                         disabled={!query.enabled}
-                        placeholder="Select Field to Query on"
+                        placeholder="Search parameter"
                     />
                 </div>
                 <Switch
