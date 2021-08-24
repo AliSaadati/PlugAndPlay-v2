@@ -6,7 +6,9 @@ import { makeStyles } from "@material-ui/core/styles"
 
 import { fetchQuerys } from '../../actions/querys/queryActions';
 import FreeSoloCreateOptionDialog from '../input/FreeSoloCreateOptionDialogue'
-import { saveView } from '../../actions/views/viewActions';
+import { saveView, deleteView } from '../../actions/views/viewActions';
+import { openDialog } from '../../actions/dialog/dialogActions';
+import SaveDialog from '../dialog/SaveDialog';
 
 const useStyles = makeStyles((theme) => ({
     buttonContainer: {
@@ -23,30 +25,41 @@ export default function ViewMenuItem() {
     const columns = useSelector(state => state.columns);
     const currView = useSelector(state => state.views.currentView);
     const querys = useSelector(state => state.querys);
+    const viewList = useSelector(state => state.views.viewList)
 
-    const disptach = useDispatch();
+    const dispatch = useDispatch();
     
     useEffect(() => {
         
     }, [])
  
-    const saveViewHandler = async () => {
+    const saveViewHandler = () => {
+        dispatch(saveView())
+    }
 
-        // let response = await fetch("/save", {
-        //   method: 'POST',
-        //   cache: 'no-cache',
-        //   headers: { 'Content-Type': 'application/json' },
-        //   referrerPolicy: 'no-referrer',
-        //   body: JSON.stringify({ view: currView, columns: columns.columnList, querys: querys.queryList })
-        // });
+    const saveAsViewHandler = () => {
+        dispatch(openDialog({
+            title: "Save current View as",
+            value: {
+              name: uniqueViewName(currView.name),
+              type: "default"
+            },
+            saveType: "saveAs"        
+        }))
+    }
     
-        // let json = await response.json();
-        
-        // return { status: response.status, body: json }
+    const deleteViewHandler = () => {
+        dispatch(deleteView())
+    }
 
-        disptach(saveView())
-      }
-
+    const uniqueViewName = (currentViewName) => {
+        let viewNameList = viewList.map(view => view.name);
+        let ind = 1;
+        let newViewName = `${currentViewName}-${ind}`
+        while (viewNameList.indexOf(newViewName) > -1)
+            newViewName = `${currentViewName}-${++ind}`
+        return newViewName
+    }
     return (
         <>
             <FreeSoloCreateOptionDialog style={{ width: '100%' }} />
@@ -61,17 +74,21 @@ export default function ViewMenuItem() {
                         disableElevation>Save</Button>
                     <Button
                         size="small"
-                        // variant='outlined'
+                        onClick={saveAsViewHandler}
                         color="primary">Save As</Button>
                 </div>
                 <div>
                     <Button
                         size="small"
+                        onClick={deleteViewHandler}
                         variant='contained'
                         color="secondary"
                         disableElevation>Delete</Button>
                 </div>
             </div>
+            <SaveDialog 
+            
+            />
         </>
     )
 }

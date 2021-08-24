@@ -37,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
     
 }));
 
-const CustomToolbar = ({open, setOpen}) => {
+const CustomToolbar = ({open, setOpen, displayMenu=false}) => {
 
     const classes = useStyles();
 
@@ -47,13 +47,14 @@ const CustomToolbar = ({open, setOpen}) => {
 
     return (
         <AppBar
-        position="fixed"
+        position={displayMenu ? "fixed" : "absolute"}
         className={clsx(classes.appBar, {
             [classes.appBarShift]: open,
         })}
     >
 
         <Toolbar>
+            {displayMenu ? 
             <IconButton
                 color="inherit"
                 aria-label="open drawer"
@@ -63,10 +64,10 @@ const CustomToolbar = ({open, setOpen}) => {
                     [classes.hide]: open,
                 })}
             >
-                <MenuIcon />
-            </IconButton>
+                <MenuIcon /> 
+            </IconButton> : null }
             <Typography variant="h6" noWrap>
-                DEMO - Plug and Play Database Reporting - Ali Saadati
+                <img src="/images/as-logo.png" style={{height:50, verticalAlign:'middle', paddingRight:'1rem'}} />Plug and Play Database Reporting
             </Typography>
         </Toolbar>
 

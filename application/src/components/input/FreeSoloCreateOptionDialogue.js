@@ -1,17 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import TextField from '@material-ui/core/TextField';
-import Dialog from '@material-ui/core/Dialog';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogActions from '@material-ui/core/DialogActions';
-import Button from '@material-ui/core/Button';
 import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
 import { makeStyles } from "@material-ui/core/styles"
 
 import { useSelector, useDispatch } from 'react-redux';
 import { setCurrentView, fetchViews, saveNewView } from '../../actions/views/viewActions';
-
+import { openDialog } from '../../actions/dialog/dialogActions'
 const filter = createFilterOptions();
 
 const useStyles = makeStyles(() => ({
@@ -30,77 +24,52 @@ export default function FreeSoloCreateOptionDialog() {
   const querys = useSelector(state => state.querys);
 
   // Local State
-  const [value, setValue] = useState({ name: views.currentView.name, type: views.currentView.type });
-  const [saveDisabled, setSaveDisabled] = useState(false);
-  const [saveViewInputMessage, setSaveViewInputMessage] = useState('Choose a unique view name.');
-  const [open, toggleOpen] = useState(false);
-  const [dialogValue, setDialogValue] = useState({ name: '', type: '' });
+  const [autocompleteValue, setAutocompleteValue] = useState({ name: views.currentView.name, type: views.currentView.type });
 
-  // Close Dialog
-  const handleClose = () => {
-    setDialogValue({
-      name: '',
-      type: '',
-    });
 
-    toggleOpen(false);
-  };
 
-  // Submit Dialog
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    event.stopPropagation();
 
-    setValue({
-      name: dialogValue.name,
-      type: dialogValue.type
-    });
-
-    dispatch(saveNewView({...dialogValue, id:-1}))
-    //   .then((res) => {
-    //     dispatch(fetchViews());
-    //     return res;
-    //   })
-    //   .then((res) => {
-    //     console.log(res.status)
-    //     dispatch(setCurrentView(res.body));
-    //   })
-    //   .catch((error) => {
-    //     console.log(error)
-    //   });
-
-    // handleClose();
-  };
+  useEffect(() => {
+    if (views.currentView.name != autocompleteValue.name) {
+      setAutocompleteValue({ name: views.currentView.name, type: views.currentView.type });
+    }
+  }, [views.currentView])
 
   return (
     <>
       <Autocomplete
         size='small'
-        value={value}
+        value={autocompleteValue}
         onChange={(event, newValue) => {
           // value other than one from the dropdown is pressed "Enter" on
           if (typeof newValue === 'string') {
 
             // Timeout needed to prevent dialog box from instantly validating
             setTimeout(() => {
-              toggleOpen(true);
-              setDialogValue({
-                name: newValue,
-                type: 'default',
-              });
+              dispatch(openDialog({
+                title: "Add a new View",
+                value: {
+                  name: newValue,
+                  type: "default"
+                },
+                saveType: "new"
+              }))
             })
 
             // "Add" button is clicked on from dropdown
           } else if (newValue && newValue.inputValue) {
-            toggleOpen(true);
-            setDialogValue({
-              name: newValue.inputValue,
-              type: 'default',
-            });
+            dispatch(openDialog({
+              title: "Add a new View",
+              value: {
+                name: newValue.inputValue,
+                type: "default"
+              },
+              saveType: "new"
+            }))
 
             // value from list is chosen
           } else if (newValue) {
-            setValue(newValue);
+            setAutocompleteValue(newValue);
             dispatch(setCurrentView(newValue));
           }
 
@@ -148,7 +117,7 @@ export default function FreeSoloCreateOptionDialog() {
             variant="standard" />
         )}
       />
-      <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
+      {/* <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
         <form onSubmit={handleSubmit}>
           <DialogTitle id="form-dialog-title">Add a new View</DialogTitle>
           <DialogContent>
@@ -196,7 +165,7 @@ export default function FreeSoloCreateOptionDialog() {
             </Button>
           </DialogActions>
         </form>
-      </Dialog>
+      </Dialog> */}
     </>
   );
 }

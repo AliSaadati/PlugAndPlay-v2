@@ -13,17 +13,20 @@ const initialState = {
 const DialogReducer = (state = initialState, action) => {
     switch (action.type) {
         case OPEN_DIALOG:
+            const {title, value, open, saveType} = action.payload;
             return {
-                open: true,
-                title: action.payload.title,
-                value: {name: action.payload.value.name, type: action.payload.value.type}
+                open: open,
+                title: title,
+                value: {name: value.name, type: value.type},
+                saveType: saveType
         }
 
         case CLOSE_DIALOG:
             return {
                 open: false,
                 title: "",
-                value: {name: "", type: ""}
+                value: {name: "", type: ""},
+                saveType: ""
             }
 
         // case SAVE_DIALOG:

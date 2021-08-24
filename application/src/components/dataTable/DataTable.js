@@ -85,8 +85,6 @@ TablePaginationActions.propTypes = {
 
 const useStyles2 = makeStyles({
   container: {
-    marginTop: '2rem',
-    maxHeight: 350,
     whiteSpace: 'nowrap'
   },
 

@@ -1,54 +1,39 @@
 import axios from 'axios';
+import { saveNewView, saveViewAs } from '../views/viewActions';
 import {
     CLOSE_DIALOG, 
     OPEN_DIALOG, 
     SAVE_DIALOG
 } from './dialogTypes';
 
-const openDialog = ({helperText, value}) => {
+export const openDialog = ({title, value, saveType}) => {
     return {
         type: OPEN_DIALOG,
         payload: {
             open: true,
-            helperText,
-            value
+            title,
+            value,
+            saveType
         }
     };
 };
 
-const closeDialog = () => {
+export const closeDialog = () => {
     return {
         type: CLOSE_DIALOG
     };
 };
 
-const saveDialog = (saveType = "new") => {
-
-    if (saveType === "new") {
+export const saveDialog = (value) => {
+    return (dispatch, getState) => {
+        let newView = {...value, id: -1}
+        const saveType = getState().dialog.saveType;
         
+        if (saveType === "new") {
+            dispatch(saveNewView(newView))
+        } else if (saveType === "saveAs") {
+            dispatch(saveViewAs(newView))
+        }
+        dispatch(closeDialog())
     }
-    return {
-        type: FETCH_COLUMNS_FAILURE,
-        payload: error
-    };
 };
-
-export const fetchColumns = currentViewId => {
-    return (dispatch) => {
-        dispatch(fetchColumnsRequest());
-        axios.get(`/columns/${currentViewId}`)
-            .then(res => {
-                dispatch(fetchColumnsSuccess(res.data))
-            })
-            .catch(err => {
-                dispatch(fetchColumnsFailure(err.message))
-            })
-    }
-}
-
-export const setColumns = columnList => {
-    return {
-        type: SET_COLUMNS,
-        payload: columnList
-    }
-}

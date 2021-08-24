@@ -18,6 +18,9 @@ import GetAppIcon from '@material-ui/icons/GetApp';
 
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchRows } from '../../actions/rows/rowActions';
+import { openDialog } from '../../actions/dialog/dialogActions';
+import { saveView } from '../../actions/views/viewActions';
+
 import xlsx from 'xlsx';
 import useExportExcel from '../../hooks/useExportExcel'
 
@@ -63,7 +66,11 @@ export default function SideDrawer({ open, setOpen }) {
     const classes = useStyles();
     const theme = useTheme();
 
-    const allRows = useSelector(state => state.rows.rows)
+
+    const allRows = useSelector(state => state.rows.rows);
+    const currView = useSelector(state => state.views.currentView);
+    const viewList = useSelector(state => state.views.viewList);
+
     const handleDrawerClose = () => {
         setOpen(false);
     };
@@ -72,39 +79,42 @@ export default function SideDrawer({ open, setOpen }) {
         dispatch(fetchRows())
     }
 
-    // const exportDataHandler = () => {
-    //     if (allRows.length > 0) {
-    //         console.log(allRows)
-    //         let keys = Object.keys(allRows[0])
-    //         let urlColumns = []
+    const saveViewHandler = () => {
+        dispatch(saveView())
+    }
 
-    //         for (let i = 0; i < keys.length; i++) {
-    //             if (keys[i].includes('URL')) {
-    //                 urlColumns.push(i)
-    //             }
-    //         }
+    const addNewViewHandler = () => {
+        dispatch(openDialog({
+            title: "Add a new View",
+            value: {
+                name: "",
+                type: ""
+            },
+            saveType: "new"
+        }))
+    }
 
-    //         for (let i = 0; i < allRows.length; i++) {
-    //             urlColumns.forEach((colIndex) => {
-    //                 console.log(colIndex)
-    //                 if (allRows[i][keys[colIndex]] !== null && allRows[i][keys[colIndex]].trim() !== '')
-    //                     allRows[i][keys[colIndex]] = {
-    //                         f: 'HYPERLINK("' + allRows[i][keys[colIndex]] + '","' + allRows[i][keys[colIndex]] + '")',
-    //                         t: 's',
-    //                         v: allRows[i][keys[colIndex]]
-    //                     }
-    //             })
-    //         }
-    //         var newWB = xlsx.utils.book_new();
-    //         var newWS = xlsx.utils.json_to_sheet(allRows);
-    //         xlsx.utils.book_append_sheet(newWB, newWS, "New Data");
-
-    //         xlsx.writeFile(newWB, "Test.xlsx");
-    //     }
-    // }
+    const saveAsViewHandler = () => {
+        dispatch(openDialog({
+            title: "Save current View as",
+            value: {
+                name: uniqueViewName(currView.name),
+                type: "default"
+            },
+            saveType: "saveAs"
+        }))
+    }
 
     const exportDataHandler = useExportExcel(allRows);
 
+    const uniqueViewName = (currentViewName) => {
+        let viewNameList = viewList.map(view => view.name);
+        let ind = 1;
+        let newViewName = `${currentViewName}-${ind}`
+        while (viewNameList.indexOf(newViewName) > -1)
+            newViewName = `${currentViewName}-${++ind}`
+        return newViewName
+    }
 
     return (
         <>
@@ -139,15 +149,15 @@ export default function SideDrawer({ open, setOpen }) {
                 </List>
                 <Divider />
                 <List>
-                    <ListItem button>
+                    <ListItem onClick={addNewViewHandler} button>
                         <ListItemIcon><AddBoxIcon /></ListItemIcon>
                         <ListItemText primary="Add View" />
                     </ListItem>
-                    <ListItem button>
+                    <ListItem onClick={saveViewHandler} button>
                         <ListItemIcon><SaveIcon /></ListItemIcon>
                         <ListItemText primary="Save View" />
                     </ListItem>
-                    <ListItem button>
+                    <ListItem onClick={saveAsViewHandler} button>
                         <ListItemIcon><CreateIcon /></ListItemIcon>
                         <ListItemText primary="Save View As" />
                     </ListItem>

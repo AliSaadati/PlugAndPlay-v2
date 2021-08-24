@@ -31,7 +31,7 @@ const fetchQuerysFailure = error => {
 export const fetchQuerys = (id) => {
     return (dispatch) => {
         dispatch(fetchQuerysRequest());
-        axios.get(`/querys/${id}`)
+        axios.get(`https://wagkjuaokk.execute-api.us-west-1.amazonaws.com/prod/querys/${id}`)
             .then(res => {
                 dispatch(fetchQuerysSuccess(res.data))
             })

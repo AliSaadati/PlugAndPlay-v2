@@ -114,7 +114,7 @@ export default function QueryMenuItem() {
                         }}
                         fullWidth
                         variant="standard"
-                        label="Select Field to Query on"
+                        label="Add Field to Query on"
                     />
                 )}
             />

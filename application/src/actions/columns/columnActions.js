@@ -29,7 +29,7 @@ const fetchColumnsFailure = error => {
 export const fetchColumns = currentViewId => {
     return (dispatch) => {
         dispatch(fetchColumnsRequest());
-        axios.get(`/columns/${currentViewId}`)
+        axios.get(`https://wagkjuaokk.execute-api.us-west-1.amazonaws.com/prod/columns/${currentViewId}`)
             .then(res => {
                 dispatch(fetchColumnsSuccess(res.data))
             })

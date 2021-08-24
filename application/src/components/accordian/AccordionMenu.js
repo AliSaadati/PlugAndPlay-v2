@@ -47,7 +47,7 @@ export default function AccordionMenu() {
                 <AccordionSummary
                     expandIcon={<ExpandMoreIcon />}>
                     <Typography
-                        className={classes.heading}>Views</Typography>
+                        className={classes.heading}>Views <span style={{fontWeight: 300}}>- add, delete and update views</span></Typography>
                 </AccordionSummary>
                 <AccordionDetails className={classes.accordionDetails}>
                     <ViewMenuItem />
@@ -59,7 +59,7 @@ export default function AccordionMenu() {
                 <AccordionSummary
                     expandIcon={<ExpandMoreIcon />}>
                     <Typography
-                        className={classes.heading}>Fields</Typography>
+                        className={classes.heading}>Fields <span style={{fontWeight: 300}}>- table columns to display</span></Typography>
                 </AccordionSummary>
                 <AccordionDetails className={classes.accordionDetails}>
                     <FieldMenuItem></FieldMenuItem>
@@ -71,7 +71,7 @@ export default function AccordionMenu() {
                 <AccordionSummary
                     expandIcon={<ExpandMoreIcon />}>
                     <Typography
-                        className={classes.heading}>Queries</Typography>
+                        className={classes.heading}>Queries <span style={{fontWeight: 300}}>- search parameters</span></Typography>
                 </AccordionSummary>
                 <AccordionDetails className={classes.accordionDetails}>
                     <QueryMenuItem></QueryMenuItem>

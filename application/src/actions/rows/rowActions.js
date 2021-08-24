@@ -30,7 +30,7 @@ export const fetchRows = () => {
         dispatch(fetchRowsRequest());
         
         try {
-            let res = await fetch('/rows', {
+            let res = await fetch('https://wagkjuaokk.execute-api.us-west-1.amazonaws.com/prod/rows', {
                 method: 'POST',
                 cache: 'no-cache',
                 headers: { 'Content-Type': 'application/json' },

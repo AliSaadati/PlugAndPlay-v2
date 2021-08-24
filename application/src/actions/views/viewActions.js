@@ -6,7 +6,10 @@ import {
     SET_CURRENT_VIEW,
     SAVE_VIEW_REQUEST,
     SAVE_VIEW_SUCCESS,
-    SAVE_VIEW_FAILURE
+    SAVE_VIEW_FAILURE,
+    DELETE_VIEW_REQUEST,
+    DELETE_VIEW_SUCCESS,
+    DELETE_VIEW_FAILURE
 } from './viewTypes';
 import { fetchQuerys } from '../querys/queryActions';
 
@@ -36,7 +39,7 @@ export const fetchViews = () => {
         dispatch(fetchViewsRequest());
 
         try {
-            const res = await axios.get('https://wagkjuaokk.execute-api.us-west-1.amazonaws.com/prod/getviews');
+            const res = await axios.get('https://wagkjuaokk.execute-api.us-west-1.amazonaws.com/prod/views');
             dispatch(fetchViewsSuccess(res.data));
         } catch (error) {
             dispatch(fetchViewsFailure(error.message));
@@ -82,10 +85,8 @@ export const saveView = () => {
             querys: state.querys.queryList
         }
 
-        // dispatch(saveViewRequest())
-
         try {
-            const res = await axios.post('/save', body)
+            const res = await axios.post('https://wagkjuaokk.execute-api.us-west-1.amazonaws.com/prod/save', body)
             if (state.querys.queryList.some(value => value.id < 0)) {
                 dispatch(fetchQuerys(state.views.currentView.id));
             }
@@ -105,13 +106,13 @@ export const saveNewView = (newView) => {
 
         try {
             // save new view
-            let res = await axios.post('/save-new', body);
+            let res = await axios.post('https://wagkjuaokk.execute-api.us-west-1.amazonaws.com/prod/save', body);
 
             // refresh views
             await dispatch(fetchViews());
 
             // set current view to newly saved view
-            dispatch(setCurrentView(res.body))
+            dispatch(setCurrentView(res.data))
 
         } catch (error) {
             console.log(error)
@@ -132,17 +133,18 @@ export const saveViewAs = (newView) => {
 
         try {
             // save new view
-            let res = await axios.post('/save-as', body);
+            let res = await axios.post('https://wagkjuaokk.execute-api.us-west-1.amazonaws.com/prod/save', body);
 
             // refresh views
             await dispatch(fetchViews());
 
+            console.log(res)
             // set current view to newly saved view
-            dispatch(setCurrentView(res.body))
+            dispatch(setCurrentView(res.data))
 
             // fetch queries if newly created query was saved
             if (state.querys.queryList.some(value => value.id < 0)) {
-                dispatch(fetchQuerys(res.body.id));
+                dispatch(fetchQuerys(res.data.id));
             }
 
         } catch (error) {
@@ -151,5 +153,52 @@ export const saveViewAs = (newView) => {
 
         // let json = await response.json();
         // return { status: response.status, body: json }
+    }
+}
+
+export const deleteViewRequest = () => {
+    return {
+        type: DELETE_VIEW_REQUEST
+    };
+};
+
+export const deleteViewSuccess = (deletedView) => {
+    return {
+        type: DELETE_VIEW_SUCCESS,
+        payload: deletedView
+    };
+};
+
+export const deleteViewFailure = error => {
+    return {
+        type: DELETE_VIEW_FAILURE,
+        payload: error
+    };
+};
+
+
+export const deleteView = () => {
+    return async (dispatch, setState) => {
+
+        dispatch(deleteViewRequest())
+        const deletedView = {
+            data:
+            {
+                view:
+                    setState().views.currentView
+            }
+        };
+
+        try {
+            console.log(1)
+            await axios.delete('https://wagkjuaokk.execute-api.us-west-1.amazonaws.com/prod/delete', deletedView );
+            console.log(2)
+            dispatch(deleteViewSuccess(deletedView));
+            console.log(3)
+            dispatch(setCurrentView({ id: 1, name: "default", type: "default" }))
+            console.log(4)
+        } catch (error) {
+            dispatch(deleteViewSuccess(error.message))
+        }
     }
 }

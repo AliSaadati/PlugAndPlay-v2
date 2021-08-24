@@ -29,7 +29,7 @@ export const fetchFields = () => {
     return async (dispatch) => {
         dispatch(fetchFieldsRequest());
 
-        axios.get('/fields')
+        axios.get('https://wagkjuaokk.execute-api.us-west-1.amazonaws.com/prod/fields')
             .then(res => {
                 dispatch(fetchFieldsSuccess(res.data))
             })

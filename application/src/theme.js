@@ -29,6 +29,32 @@ const theme = createTheme({
           backgroundColor: "transparent"
         }
       }
+    },
+    MuiToolbar: {
+      gutters: {
+        paddingLeft: "24px",
+        paddingRight: "24px"
+      }
+    },
+    MuiBottomNavigation: {
+      root: {
+        backgroundColor: teal[500],
+        position: 'fixed',
+        bottom: 0,
+        right: 0,
+        left: 0,
+        zIndex: 2
+      }
+    },
+    MuiBottomNavigationAction: {
+      root: {
+        color: 'white',
+      },
+      label:{
+        fontWeight:700,
+        fontSize: '.6rem',
+        textTransform: 'uppercase'
+      }
     }
   }
 });
